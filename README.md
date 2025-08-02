@@ -16,7 +16,7 @@ A simple and fun **Tic Tac Toe** game where two players take turns (O and X) on 
 
 ## 🔗 Live Demo
 
-Play it here: [https://ehsaan-qazi.github.io/tic-tac-toe/](https://ehsaan-qazi.github.io/tic-tac-toe/)  
+Play it here: [https://ehsaan-qazi.github.io/tic-tac-toe/](https://ehsaan-qazi.github.io/Tic-Tak-Toe/)  
 
 ---
 
