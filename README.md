@@ -26,7 +26,7 @@ Play it here: [https://ehsaan-qazi.github.io/tic-tac-toe/](https://ehsaan-qazi.g
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/tic-tac-toe.git
+   git clone https://github.com/ehsaan-qazi/tic-tac-toe.git
 2. **Open the game**
     Open index.html in any web browser and start playing.
 **Project Structure**
