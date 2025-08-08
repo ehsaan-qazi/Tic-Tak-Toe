@@ -1,68 +1,166 @@
-let boxes = document.querySelectorAll(".box");
-let resetBtn = document.getElementById("reset-btn");
-let turnO = true;
-let newGame = document.getElementById("new-btn");
-let winCont = document.querySelector(".winner-button");
-let result = document.querySelector("#result");
+(() => {
+  const winningCombinations = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
 
-const winPattern = [
-    [0,1,2],
-    [3,4,5],
-    [6,7,8],
-    [0,3,6],
-    [2,4,6],
-    [1,4,7],
-    [2,5,8],
-    [0,4,8]
-]
+  /** @type {HTMLDivElement} */
+  let boardElement;
+  /** @type {NodeListOf<HTMLButtonElement>} */
+  let cellButtons;
+  /** @type {HTMLParagraphElement} */
+  let statusText;
+  /** @type {HTMLButtonElement} */
+  let newRoundButton;
+  /** @type {HTMLButtonElement} */
+  let resetGameButton;
+  /** @type {HTMLElement} */
+  let scoreXElement;
+  /** @type {HTMLElement} */
+  let scoreOElement;
+  /** @type {HTMLElement} */
+  let scoreDrawElement;
 
-function resetGame(){
-    turnO = true;
-    enableButtons();
-    winCont.classList.add("hide");
-}
-boxes.forEach((box)=>{
-    box.addEventListener("click",()=>{
-        if(turnO){
-            box.innerText = "O";
-            turnO=false;
-        }
-        else {
-            box.innerText = "X";
-            turnO=true;
-        }
-        box.disabled = true;
-        checkWinner();
-    })
-})
-const checkWinner=()=>{
-    for(let pattern of winPattern){
-        let pos1 = boxes[pattern[0]].innerText;
-        let pos2 = boxes[pattern[1]].innerText;
-        let pos3 = boxes[pattern[2]].innerText;
-        if(pos1 != "" && pos2 != "" && pos3 != ""){
-            if(pos1===pos2 && pos2===pos3){
-                console.log("Winner is", pos1);
-                showWinner(pos1);
-            }
-        }
-    }
-}
-const showWinner = (winner) =>{
-    result.innerText = `The winner is ${winner}`;
-    winCont.classList.remove("hide");
-    const disableBoxes = () =>{
-        boxes.forEach(box => box.disabled=true);
-    };
-    disableBoxes();
-}
+  /** @type {("X"|"O"|null)[]} */
+  let boardState = Array(9).fill(null);
+  /** @type {"X"|"O"} */
+  let currentPlayer = "X";
+  let isGameActive = true;
 
-const enableButtons = () =>{
-    boxes.forEach(box=>{
-        box.disabled=false;
-        box.innerText="";
+  let scoreX = 0;
+  let scoreO = 0;
+  let scoreDraw = 0;
+
+  function initialize() {
+    boardElement = document.getElementById("board");
+    cellButtons = boardElement.querySelectorAll(".cell");
+    statusText = document.getElementById("statusText");
+    newRoundButton = document.getElementById("newRoundBtn");
+    resetGameButton = document.getElementById("resetGameBtn");
+    scoreXElement = document.getElementById("scoreX");
+    scoreOElement = document.getElementById("scoreO");
+    scoreDrawElement = document.getElementById("scoreDraw");
+
+    cellButtons.forEach((cell) => {
+      cell.addEventListener("click", onCellClick);
     });
-}
 
-resetBtn.addEventListener("click",resetGame);
-newGame.addEventListener("click",resetGame);
+    newRoundButton.addEventListener("click", startNewRound);
+    resetGameButton.addEventListener("click", resetAll);
+
+    updateStatus();
+  }
+
+  function onCellClick(event) {
+    const cell = event.currentTarget;
+    const index = Number(cell.getAttribute("data-cell-index"));
+
+    if (!isGameActive || boardState[index]) {
+      return;
+    }
+
+    boardState[index] = currentPlayer;
+    updateCellUI(cell, currentPlayer);
+    cell.setAttribute("aria-label", `Cell ${index + 1}, ${currentPlayer}`);
+
+    const winningLine = getWinningLine();
+    if (winningLine) {
+      isGameActive = false;
+      highlightWinningCells(winningLine);
+      updateScores(currentPlayer);
+      statusText.textContent = `${currentPlayer} wins!`;
+      return;
+    }
+
+    if (boardState.every((v) => v !== null)) {
+      isGameActive = false;
+      scoreDraw += 1;
+      updateScoreboard();
+      statusText.textContent = "It's a draw.";
+      return;
+    }
+
+    togglePlayer();
+    updateStatus();
+  }
+
+  function updateCellUI(cell, player) {
+    cell.textContent = player;
+    cell.classList.add(player === "X" ? "mark-x" : "mark-o");
+    cell.disabled = true;
+  }
+
+  function togglePlayer() {
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+  }
+
+  function updateStatus() {
+    statusText.textContent = `${currentPlayer} to move`;
+  }
+
+  function getWinningLine() {
+    for (const [a, b, c] of winningCombinations) {
+      const va = boardState[a];
+      if (va && va === boardState[b] && va === boardState[c]) {
+        return [a, b, c];
+      }
+    }
+    return null;
+  }
+
+  function highlightWinningCells(indices) {
+    indices.forEach((i) => {
+      const cell = cellButtons[i];
+      cell.classList.add("win");
+    });
+  }
+
+  function updateScores(winner) {
+    if (winner === "X") {
+      scoreX += 1;
+    } else {
+      scoreO += 1;
+    }
+    updateScoreboard();
+  }
+
+  function updateScoreboard() {
+    scoreXElement.textContent = String(scoreX);
+    scoreOElement.textContent = String(scoreO);
+    scoreDrawElement.textContent = String(scoreDraw);
+  }
+
+  function startNewRound() {
+    boardState = Array(9).fill(null);
+    isGameActive = true;
+    currentPlayer = "X";
+    statusText.textContent = "X to move";
+
+    cellButtons.forEach((cell, index) => {
+      cell.textContent = "";
+      cell.classList.remove("mark-x", "mark-o", "win");
+      cell.disabled = false;
+      cell.setAttribute("aria-label", `Cell ${index + 1}, empty`);
+    });
+  }
+
+  function resetAll() {
+    scoreX = 0;
+    scoreO = 0;
+    scoreDraw = 0;
+    updateScoreboard();
+    startNewRound();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initialize);
+  } else {
+    initialize();
+  }
+})();

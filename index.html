@@ -1,33 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Tic Tak Toe</title>
-</head>
-<body>
-    <div id="winner-id" class="winner-button hide">
-        <p id="result">Winner </p>
-    </div>
-    <div>
-        <button id="new-btn">New Game</button>
-    </div>
-    <h1>Tic Tak Toe</h1>
-    <div id="container">
-        <div id="game">
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
-            <button class="box"></button>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1 class="app-title">Tic Tac Toe</h1>
+
+      <section class="scoreboard" aria-label="Scoreboard">
+        <div class="score">
+          <span class="label">Player X</span>
+          <span id="scoreX" class="value">0</span>
         </div>
-    </div>
-    <button id="reset-btn">Reset</button>
-    <script src="script.js"></script>
-</body>
-</html>
+        <div class="score">
+          <span class="label">Player O</span>
+          <span id="scoreO" class="value">0</span>
+        </div>
+        <div class="score">
+          <span class="label">Draws</span>
+          <span id="scoreDraw" class="value">0</span>
+        </div>
+      </section>
+
+      <p id="statusText" class="status" role="status" aria-live="polite">X to move</p>
+
+      <div id="board" class="board" role="grid" aria-label="Tic Tac Toe board">
+        <button class="cell" role="gridcell" aria-label="Cell 1, empty" data-cell-index="0"></button>
+        <button class="cell" role="gridcell" aria-label="Cell 2, empty" data-cell-index="1"></button>
+        <button class="cell" role="gridcell" aria-label="Cell 3, empty" data-cell-index="2"></button>
+        <button class="cell" role="gridcell" aria-label="Cell 4, empty" data-cell-index="3"></button>
+        <button class="cell" role="gridcell" aria-label="Cell 5, empty" data-cell-index="4"></button>
+        <button class="cell" role="gridcell" aria-label="Cell 6, empty" data-cell-index="5"></button>
+        <button class="cell" role="gridcell" aria-label="Cell 7, empty" data-cell-index="6"></button>
+        <button class="cell" role="gridcell" aria-label="Cell 8, empty" data-cell-index="7"></button>
+        <button class="cell" role="gridcell" aria-label="Cell 9, empty" data-cell-index="8"></button>
+      </div>
+
+      <div class="controls">
+        <button id="newRoundBtn" class="btn primary" type="button">New Round</button>
+        <button id="resetGameBtn" class="btn" type="button" title="Reset everything (scores and board)">Reset All</button>
+      </div>
+
+      <footer class="help">
+        <p>
+          Click a square to place your mark. X starts first each round. First to
+          complete a row, column, or diagonal wins.
+        </p>
+      </footer>
+    </main>
+
+    <script defer src="script.js"></script>
+  </body>
+  </html>
